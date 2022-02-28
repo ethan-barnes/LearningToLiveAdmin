@@ -20,7 +20,8 @@ function FirebaseGet() {
 
 function displayFirebaseData(fbData) {
     // Prevents multiple button presses showing multiple data.
-    document.getElementById("firebaseElements").innerHTML = ""; 
+    document.getElementById("firebaseElements").innerHTML = "";
+    document.getElementById("accordion").innerHTML = "";
 
     var textToDisplay = "";
     var json = JSON.parse(fbData);
@@ -39,6 +40,7 @@ function displayFirebaseData(fbData) {
             div.appendChild(h3);
 
             for (var child in json[key]) {
+                document.getElementById("accordion").appendChild(createBootstrapCard(child, child)); // TODO add elements to expanding card
                 // Create heading for children of key
                 var h5 = document.createElement("h5");
                 var node1 = document.createTextNode(child.toString());
@@ -58,10 +60,51 @@ function displayFirebaseData(fbData) {
                     link.appendChild(node2);
                     listElement.appendChild(link);
                     div.appendChild(listElement);
+
                 }
             }
         }
     }
+}
+
+// Using Bootstrap collapse functionality
+function createBootstrapCard(title, contentId, content) {
+    var card = document.createElement('div');
+    card.setAttribute('class', 'card');
+
+    var cardHeader = document.createElement('div');
+    cardHeader.setAttribute('class', 'card-header');
+    cardHeader.setAttribute('id', title);
+
+    var h5 = document.createElement('h5');
+    h5.setAttribute('class', 'mb-0');
+
+    var btn = document.createElement('button');
+    btn.setAttribute('class', 'btn btn-link');
+    btn.setAttribute('data-toggle', 'collapse');
+    btn.setAttribute('data-target', '#' + contentId);
+    btn.setAttribute('aria-expanded', 'false');
+    btn.setAttribute('aria-controls', contentId);
+    btn.innerHTML = contentId;
+
+    h5.appendChild(btn);
+    cardHeader.appendChild(h5);
+
+    var collapsable = document.createElement('div');
+    collapsable.setAttribute('id', contentId);
+    collapsable.setAttribute('class', 'collapse show');
+    collapsable.setAttribute('aria-labelledby', title);
+    collapsable.setAttribute('data-parent', '#accordion');
+
+    var body = document.createElement('div');
+    body.setAttribute('class', 'card-body');
+
+    collapsable.appendChild(body);
+
+    card.appendChild(cardHeader);
+    card.appendChild(collapsable);
+
+    return card;
 }
 
 function capitaliseFirstLetter(string) {
