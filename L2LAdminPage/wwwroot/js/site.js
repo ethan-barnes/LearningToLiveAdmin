@@ -45,19 +45,23 @@ function displayFirebaseData(fbData) {
 
                 h5.appendChild(node1);
                 div.appendChild(h5);
-                for (var child2 in child) {
-                    var h7 = document.createElement("h7");
-                    var node1 = document.createTextNode(child2.toString()); // TODO fix this
 
-                    h7.appendChild(node1);
-                    div.appendChild(h7);
+                for (var child2 in json[key][child]) {
+                    // Create list entry that will hold our link
+                    var listElement = document.createElement("li");
+
+                    var link = document.createElement("a");
+                    var node2 = document.createTextNode(child2.toString());
+
+                    link.setAttribute('href', json[key][child][child2]); // Add link to relevant resource
+                    listElement.setAttribute('style', 'list-style: none'); // Remove bullet point
+                    link.appendChild(node2);
+                    listElement.appendChild(link);
+                    div.appendChild(listElement);
                 }
             }
         }
     }
-
-    //document.getElementById("firebaseText").innerHTML = textToDisplay;
-
 }
 
 function capitaliseFirstLetter(string) {
