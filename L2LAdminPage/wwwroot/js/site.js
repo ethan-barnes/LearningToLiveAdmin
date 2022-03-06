@@ -1,6 +1,5 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
+﻿var collapsableListDivs = [];
+var divNum = 0;
 
 function FirebaseGet() {
     var dbUrl = 'https://learningtolive-e4844-default-rtdb.europe-west1.firebasedatabase.app/.json'
@@ -23,30 +22,28 @@ function displayFirebaseData(fbData) {
     document.getElementById("firebaseElements").innerHTML = "";
     document.getElementById("accordion").innerHTML = "";
 
-    var textToDisplay = "";
     var json = JSON.parse(fbData);
     console.log(json);
 
     for (var key in json) {
         if (json.hasOwnProperty(key)) {
-            console.log(key + " -> " + json[key]);
-
             // Create heading for each key in database
             var h3 = document.createElement("h3");
             var node = document.createTextNode(capitaliseFirstLetter(key));
-
             h3.appendChild(node);
-            var div = document.getElementById("firebaseElements");
-            div.appendChild(h3);
 
+            document.getElementById("accordion").appendChild(createBootstrapCard(key + 'Heading', key, json[key]));
+        }
+    }
+    for (var key in json) {
+        if (json.hasOwnProperty(key)) {
             for (var child in json[key]) {
-                document.getElementById("accordion").appendChild(createBootstrapCard(child, child)); // TODO add elements to expanding card
                 // Create heading for children of key
                 var h5 = document.createElement("h5");
                 var node1 = document.createTextNode(child.toString());
 
                 h5.appendChild(node1);
-                div.appendChild(h5);
+                appendToDiv(h5);
 
                 for (var child2 in json[key][child]) {
                     // Create list entry that will hold our link
@@ -59,16 +56,21 @@ function displayFirebaseData(fbData) {
                     listElement.setAttribute('style', 'list-style: none'); // Remove bullet point
                     link.appendChild(node2);
                     listElement.appendChild(link);
-                    div.appendChild(listElement);
-
+                    appendToDiv(listElement);
                 }
+                divNum++;
             }
         }
     }
 }
 
+function appendToDiv(element) {
+    collapsableListDivs[divNum].appendChild(element);
+}
+
 // Using Bootstrap collapse functionality
 function createBootstrapCard(title, contentId, content) {
+    console.log(content);
     var card = document.createElement('div');
     card.setAttribute('class', 'card');
 
@@ -98,6 +100,7 @@ function createBootstrapCard(title, contentId, content) {
 
     var body = document.createElement('div');
     body.setAttribute('class', 'card-body');
+    collapsableListDivs.push(body);
 
     collapsable.appendChild(body);
 
