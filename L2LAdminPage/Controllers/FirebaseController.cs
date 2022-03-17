@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace L2LAdminPage.Controllers
@@ -22,7 +24,13 @@ namespace L2LAdminPage.Controllers
         {
             try
             {
-                return Get(url);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+
+                using HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                using Stream stream = response.GetResponseStream();
+                using StreamReader reader = new StreamReader(stream);
+                return reader.ReadToEnd();
             } 
             catch (Exception e)
             {
@@ -31,17 +39,21 @@ namespace L2LAdminPage.Controllers
             
         }
 
-        private string Get(string uri)
+        // FirebasePatch: /Firebase/FirebasePatch?url="placeholder"&category="placeholder"&subCategory="placeholder"&key="placeholder"&value="placeholder"
+        public async Task<HttpResponseMessage> FirebasePatchAsync(string url, string category, string subCategory, string key, string value)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            // https://learningtolive-e4844-default-rtdb.europe-west1.firebasedatabase.app/
+            string requestUri = $"{url}/{category}/{subCategory}.json";
+            var content = new StringContent($"\"{key}\": \"{value}\"", Encoding.UTF8, "application/json");
 
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
+            HttpClient client = new HttpClient();
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUri)
             {
-                return reader.ReadToEnd();
-            }
+                Content = content
+            };
+
+            var response = await client.SendAsync(request);
+            return response;
         }
     }
 }

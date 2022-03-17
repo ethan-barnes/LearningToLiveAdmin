@@ -1,11 +1,16 @@
 ﻿var collapsableListDivs = [];
 var divNum = 0;
+var siteUrl = window.location.host;
+var dbUrl;
 
-function FirebaseGet() {
-    var dbUrl = 'https://learningtolive-e4844-default-rtdb.europe-west1.firebasedatabase.app/.json'
-    var siteUrl = window.location.host;
+function FirebaseSend() {
+    console.log("firebase send");
+}
+
+function FirebaseGet(country) {
+    dbUrl = 'https://learningtolive-e4844-default-rtdb.europe-west1.firebasedatabase.app/' + country;
     $.ajax({
-        url: 'https://' + siteUrl + '/Firebase/GetJson?url=' + dbUrl,
+        url: 'https://' + siteUrl + '/Firebase/GetJson?url=' + dbUrl + '.json',
         success: function (data) {
             displayFirebaseData(data);
         },
@@ -19,7 +24,6 @@ function FirebaseGet() {
 
 function displayFirebaseData(fbData) {
     // Prevents multiple button presses showing multiple data.
-    document.getElementById("firebaseElements").innerHTML = "";
     document.getElementById("accordion").innerHTML = "";
 
     var json = JSON.parse(fbData);
@@ -53,7 +57,8 @@ function displayFirebaseData(fbData) {
                     var node2 = document.createTextNode(child2.toString());
 
                     link.setAttribute('href', json[key][child][child2]); // Add link to relevant resource
-                    listElement.setAttribute('style', 'list-style: none'); // Remove bullet point
+                    link.setAttribute('target', '_blank');
+                    listElement.setAttribute('style', 'list-style: none'); // Remove bullet point                    
                     link.appendChild(node2);
                     listElement.appendChild(link);
                     appendToDiv(listElement);
@@ -82,7 +87,7 @@ function createBootstrapCard(title, contentId, content) {
     h5.setAttribute('class', 'mb-0');
 
     var btn = document.createElement('button');
-    btn.setAttribute('class', 'btn btn-link');
+    btn.setAttribute('class', 'btn btn-lg btn-block');
     btn.setAttribute('data-toggle', 'collapse');
     btn.setAttribute('data-target', '#' + contentId);
     btn.setAttribute('aria-expanded', 'false');
@@ -96,10 +101,35 @@ function createBootstrapCard(title, contentId, content) {
     collapsable.setAttribute('id', contentId);
     collapsable.setAttribute('class', 'collapse show');
     collapsable.setAttribute('aria-labelledby', title);
-    collapsable.setAttribute('data-parent', '#accordion');
 
     var body = document.createElement('div');
     body.setAttribute('class', 'card-body');
+
+    // New element form
+    var inputForm = document.createElement('form');
+    inputForm.setAttribute('id', title + 'form');
+    inputForm.setAttribute('action',
+        'https://' + siteUrl + '/Firebase/FirebasePatch?url=' + dbUrl +
+        '&category=test&subCategory=test&key=test&value=test');
+    inputForm.setAttribute('method', 'PATCH');
+    var titleInput = document.createElement('input');
+    titleInput.setAttribute('type', 'text');
+    titleInput.setAttribute('id', title + 'TitleInput');
+    titleInput.setAttribute('placeholder', 'Title');
+    var urlInput = document.createElement('input');
+    urlInput.setAttribute('type', 'text');
+    urlInput.setAttribute('id', title + 'UrlInput');
+    urlInput.setAttribute('placeholder', 'Link');
+    var submitBtn = document.createElement('input');
+    submitBtn.setAttribute('type', 'submit');
+    submitBtn.setAttribute('value', 'Submit');
+
+    inputForm.appendChild(titleInput);
+    inputForm.appendChild(urlInput);
+    inputForm.appendChild(submitBtn);
+
+    body.appendChild(inputForm);
+
     collapsableListDivs.push(body);
 
     collapsable.appendChild(body);
