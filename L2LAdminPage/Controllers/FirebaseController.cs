@@ -18,6 +18,8 @@ namespace L2LAdminPage.Controllers
             return "This is my default action.";
         }
 
+        HttpClient client = new HttpClient();
+
         // Get: /Firebase/GetJson
         // Get: /Firebase/GetJson?url=https://www.placeholder.com
         public string GetJson(string url)
@@ -42,16 +44,24 @@ namespace L2LAdminPage.Controllers
         // FirebasePatch: /Firebase/FirebasePatch?url="placeholder"&category="placeholder"&subCategory="placeholder"&key="placeholder"&value="placeholder"
         public async Task<HttpResponseMessage> FirebasePatchAsync(string url, string category, string subCategory, string key, string value)
         {
-            // https://learningtolive-e4844-default-rtdb.europe-west1.firebasedatabase.app/
             string requestUri = $"{url}/{category}/{subCategory}.json";
             string body = "{\"" + key + "\"" + ":" + "\"" + value + "\"}";
             var content = new StringContent(body, Encoding.UTF8, "application/json");
 
-            HttpClient client = new HttpClient();
             var request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUri)
             {
                 Content = content
             };
+
+            var response = await client.SendAsync(request);
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> FirebaseDeleteAsync(string url, string category, string subCategory, string key)
+        {
+            string requestUri = $"{url}/{category}/{subCategory}/{key}.json";
+
+            var request = new HttpRequestMessage(new HttpMethod("DELETE"), requestUri);
 
             var response = await client.SendAsync(request);
             return response;
