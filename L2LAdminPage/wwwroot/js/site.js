@@ -3,8 +3,23 @@ var divNum = 0;
 var siteUrl = window.location.host;
 var dbUrl;
 
-function FirebaseSend() {
+function FirebasePatch(category, subCategory, key, value) {
     console.log("firebase send");
+    $.ajax({
+        url: 'https://' + siteUrl + '/Firebase/FirebasePatch?url='
+            + dbUrl + '&category=' + category +
+            '&subCategory=' + subCategory +
+            '&key=' + key +
+            '&value=' + value,
+        success: function (data) {
+            console.log("success: ");
+            console.log(data);
+        },
+        error: function (xhr) {
+            alert("Error writing to firebase");
+            console.log(xhr);
+        }
+    });
 }
 
 function FirebaseGet(country) {
@@ -36,7 +51,7 @@ function displayFirebaseData(fbData) {
             var node = document.createTextNode(capitaliseFirstLetter(key));
             h3.appendChild(node);
 
-            document.getElementById("accordion").appendChild(createBootstrapCard(key + 'Heading', key, json[key]));
+            document.getElementById("accordion").appendChild(createBootstrapCard(key + 'Heading', key));
         }
     }
     for (var key in json) {
@@ -44,6 +59,7 @@ function displayFirebaseData(fbData) {
             for (var child in json[key]) {
                 // Create heading for children of key
                 var h5 = document.createElement("h5");
+                h5.setAttribute('id', child + 'SubCat');
                 var node1 = document.createTextNode(child.toString());
 
                 h5.appendChild(node1);
@@ -63,6 +79,7 @@ function displayFirebaseData(fbData) {
                     listElement.appendChild(link);
                     appendToDiv(listElement);
                 }
+                createForm(key + 'Heading', child, h5);
                 divNum++;
             }
         }
@@ -73,9 +90,46 @@ function appendToDiv(element) {
     collapsableListDivs[divNum].appendChild(element);
 }
 
+function updateFirebase(categoryId, subCatId, titleId, urlId) {
+    var category = document.getElementById(categoryId).innerText;
+    var subCat = document.getElementById(subCatId).innerText;
+    var title = document.getElementById(titleId).value;
+    var url = document.getElementById(urlId).value;
+    FirebasePatch(category, subCat, title, url);
+}
+
+function createForm(title, content, heading) {
+    // New element form
+    var titleId = title + 'TitleInput';
+    var urlId = title + 'UrlInput';
+    var subCat = content + 'SubCat';
+
+    var titleInput = document.createElement('input');
+    titleInput.setAttribute('type', 'text');
+    titleInput.setAttribute('id', titleId);
+    titleInput.setAttribute('placeholder', 'Title');
+
+    var urlInput = document.createElement('input');
+    urlInput.setAttribute('type', 'text');
+    urlInput.setAttribute('id', urlId);
+    urlInput.setAttribute('placeholder', 'Link');
+
+    var inputForm = document.createElement('form');
+    inputForm.appendChild(titleInput);
+    inputForm.appendChild(urlInput);
+    inputForm.setAttribute('id', title + 'form');
+
+    var submitBtn = document.createElement('input');
+    submitBtn.setAttribute('type', 'button');
+    submitBtn.setAttribute('value', 'Submit');
+    submitBtn.onclick = function () { updateFirebase(title, subCat, titleId, urlId) };
+
+    inputForm.appendChild(submitBtn);
+    heading.appendChild(inputForm);
+}
+
 // Using Bootstrap collapse functionality
-function createBootstrapCard(title, contentId, content) {
-    console.log(content);
+function createBootstrapCard(title, contentId) {
     var card = document.createElement('div');
     card.setAttribute('class', 'card');
 
@@ -104,31 +158,6 @@ function createBootstrapCard(title, contentId, content) {
 
     var body = document.createElement('div');
     body.setAttribute('class', 'card-body');
-
-    // New element form
-    var inputForm = document.createElement('form');
-    inputForm.setAttribute('id', title + 'form');
-    inputForm.setAttribute('action',
-        'https://' + siteUrl + '/Firebase/FirebasePatch?url=' + dbUrl +
-        '&category=test&subCategory=test&key=test&value=test');
-    inputForm.setAttribute('method', 'PATCH');
-    var titleInput = document.createElement('input');
-    titleInput.setAttribute('type', 'text');
-    titleInput.setAttribute('id', title + 'TitleInput');
-    titleInput.setAttribute('placeholder', 'Title');
-    var urlInput = document.createElement('input');
-    urlInput.setAttribute('type', 'text');
-    urlInput.setAttribute('id', title + 'UrlInput');
-    urlInput.setAttribute('placeholder', 'Link');
-    var submitBtn = document.createElement('input');
-    submitBtn.setAttribute('type', 'submit');
-    submitBtn.setAttribute('value', 'Submit');
-
-    inputForm.appendChild(titleInput);
-    inputForm.appendChild(urlInput);
-    inputForm.appendChild(submitBtn);
-
-    body.appendChild(inputForm);
 
     collapsableListDivs.push(body);
 

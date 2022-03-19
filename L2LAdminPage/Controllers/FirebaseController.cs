@@ -44,7 +44,8 @@ namespace L2LAdminPage.Controllers
         {
             // https://learningtolive-e4844-default-rtdb.europe-west1.firebasedatabase.app/
             string requestUri = $"{url}/{category}/{subCategory}.json";
-            var content = new StringContent($"\"{key}\": \"{value}\"", Encoding.UTF8, "application/json");
+            string body = "{\"" + key + "\"" + ":" + "\"" + value + "\"}";
+            var content = new StringContent(body, Encoding.UTF8, "application/json");
 
             HttpClient client = new HttpClient();
             var request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUri)
@@ -52,7 +53,9 @@ namespace L2LAdminPage.Controllers
                 Content = content
             };
 
+
             var response = await client.SendAsync(request);
+            var x = 4 + 5;
             return response;
         }
     }
