@@ -53,9 +53,7 @@ namespace L2LAdminPage.Controllers
                 Content = content
             };
 
-
             var response = await client.SendAsync(request);
-            var x = 4 + 5;
             return response;
         }
     }

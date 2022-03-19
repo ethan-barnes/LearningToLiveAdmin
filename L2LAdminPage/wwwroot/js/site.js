@@ -2,6 +2,7 @@
 var divNum = 0;
 var siteUrl = window.location.host;
 var dbUrl;
+var currentCountry;
 
 function FirebasePatch(category, subCategory, key, value) {
     console.log("firebase send");
@@ -14,15 +15,18 @@ function FirebasePatch(category, subCategory, key, value) {
         success: function (data) {
             console.log("success: ");
             console.log(data);
+            FirebaseGet(currentCountry); // updates lists
         },
         error: function (xhr) {
             alert("Error writing to firebase");
             console.log(xhr);
+            FirebaseGet(currentCountry); // updates lists
         }
     });
 }
 
 function FirebaseGet(country) {
+    currentCountry = country;
     dbUrl = 'https://learningtolive-e4844-default-rtdb.europe-west1.firebasedatabase.app/' + country;
     $.ajax({
         url: 'https://' + siteUrl + '/Firebase/GetJson?url=' + dbUrl + '.json',
@@ -51,7 +55,7 @@ function displayFirebaseData(fbData) {
             var node = document.createTextNode(capitaliseFirstLetter(key));
             h3.appendChild(node);
 
-            document.getElementById("accordion").appendChild(createBootstrapCard(key + 'Heading', key));
+            document.getElementById("accordion").appendChild(createBootstrapCard(key + 'Heading', capitaliseFirstLetter(key)));
         }
     }
     for (var key in json) {
@@ -80,8 +84,8 @@ function displayFirebaseData(fbData) {
                     appendToDiv(listElement);
                 }
                 createForm(key + 'Heading', child, h5);
-                divNum++;
             }
+            divNum++;
         }
     }
 }
@@ -100,8 +104,8 @@ function updateFirebase(categoryId, subCatId, titleId, urlId) {
 
 function createForm(title, content, heading) {
     // New element form
-    var titleId = title + 'TitleInput';
-    var urlId = title + 'UrlInput';
+    var titleId = content + 'TitleInput';
+    var urlId = content + 'UrlInput';
     var subCat = content + 'SubCat';
 
     var titleInput = document.createElement('input');
@@ -117,7 +121,7 @@ function createForm(title, content, heading) {
     var inputForm = document.createElement('form');
     inputForm.appendChild(titleInput);
     inputForm.appendChild(urlInput);
-    inputForm.setAttribute('id', title + 'form');
+    inputForm.setAttribute('id', content + 'form');
 
     var submitBtn = document.createElement('input');
     submitBtn.setAttribute('type', 'button');
