@@ -105,7 +105,7 @@ function displayFirebaseData(fbData) {
                     listElement.appendChild(createDeleteButton(key, child, child2.toString()));
                     
                     appendToDiv(listElement);
-                }
+                }                
                 createForm(key + 'Heading', child, h5);
             }
             divNum++;
@@ -138,10 +138,28 @@ function createDeleteButton(category, subCategory, key) {
 }
 
 function createForm(title, content, heading) {
-    // New element form
     var titleId = content + 'TitleInput';
     var urlId = content + 'UrlInput';
     var subCat = content + 'SubCat';
+    var collapseId = content + 'Card';
+
+    var plusIcon = document.createElement('i');
+    plusIcon.setAttribute('class', 'fa fa-plus');
+    var addButton = document.createElement('button');
+    addButton.setAttribute('type', 'button');
+    addButton.setAttribute('class', 'btn btn-sm');
+    addButton.setAttribute('data-toggle', 'collapse');
+    addButton.setAttribute('data-target', '#' + collapseId);
+    addButton.setAttribute('aria-expanded', 'false');
+    addButton.setAttribute('aria-controls', collapseId);
+    addButton.appendChild(plusIcon);
+
+    var collapse = document.createElement('div');
+    collapse.setAttribute('class', 'collapse');
+    collapse.setAttribute('id', collapseId);
+    var formCard = document.createElement('div');
+    formCard.setAttribute('class', 'card card-body');
+    collapse.appendChild(formCard);
 
     var titleInput = document.createElement('input');
     titleInput.setAttribute('type', 'text');
@@ -163,8 +181,10 @@ function createForm(title, content, heading) {
     submitBtn.setAttribute('value', 'Submit');
     submitBtn.onclick = function () { updateFirebase(title, subCat, titleId, urlId) };
 
+    heading.appendChild(addButton);
     inputForm.appendChild(submitBtn);
-    heading.appendChild(inputForm);
+    formCard.appendChild(inputForm);
+    heading.appendChild(collapse);
 }
 
 // Using Bootstrap collapse functionality
