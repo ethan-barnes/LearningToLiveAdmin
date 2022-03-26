@@ -80,33 +80,38 @@ function displayFirebaseData(fbData) {
     }
     for (var key in json) {
         if (json.hasOwnProperty(key)) {
-            for (var child in json[key]) {
+            for (var child2 in json[key]['headings']) {
                 // Create heading for children of key
+                var name = json[key]['headings'][child2]['name'];
+                var id = json[key]['headings'][child2]['id'];
+
                 var h5 = document.createElement("h5");
-                h5.setAttribute('id', child + 'SubCat');
-                var node1 = document.createTextNode(child.toString());
+                h5.setAttribute('id', name + 'SubCat');
+                var node1 = document.createTextNode(name);
 
                 h5.appendChild(node1);
                 appendToDiv(h5);
 
-                for (var child2 in json[key][child]) {
-                    // Create list entry that will hold our link
+                name = name.replace(/\s+/g, ''); // remove whitespace
+                createForm(key + 'Heading', id, h5);
+
+                // Create list entry that will hold our link                    
+                for (var linkId in json[key][id]) {
                     var listElement = document.createElement("li");
 
                     var link = document.createElement("a");
-                    var node2 = document.createTextNode(child2.toString());
+                    var node2 = document.createTextNode(linkId.toString());
 
-                    link.setAttribute('href', json[key][child][child2]); // Add link to relevant resource
+                    link.setAttribute('href', json[key][id][linkId]); // Add link to relevant resource
                     link.setAttribute('target', '_blank');
                     link.setAttribute('style', 'padding-right: 1%;');
                     listElement.setAttribute('style', 'list-style: none;');
                     link.appendChild(node2);
                     listElement.appendChild(link);
-                    listElement.appendChild(createDeleteButton(key, child, child2.toString()));
-                    
+                    listElement.appendChild(createDeleteButton(key, id, linkId.toString()));
+
                     appendToDiv(listElement);
-                }                
-                createForm(key + 'Heading', child, h5);
+                }
             }
             divNum++;
         }
@@ -119,10 +124,10 @@ function appendToDiv(element) {
 
 function updateFirebase(categoryId, subCatId, titleId, urlId) {
     var category = document.getElementById(categoryId).innerText;
-    var subCat = document.getElementById(subCatId).innerText;
+    //var subCat = document.getElementById(subCatId).innerText;
     var title = document.getElementById(titleId).value;
     var url = document.getElementById(urlId).value;
-    FirebasePatch(category, subCat, title, url);
+    FirebasePatch(category, subCatId, title, url);
 }
 
 function createDeleteButton(category, subCategory, key) {
@@ -140,7 +145,7 @@ function createDeleteButton(category, subCategory, key) {
 function createForm(title, content, heading) {
     var titleId = content + 'TitleInput';
     var urlId = content + 'UrlInput';
-    var subCat = content + 'SubCat';
+    var subCat = content;
     var collapseId = content + 'Card';
 
     var plusIcon = document.createElement('i');
