@@ -75,7 +75,7 @@ function displayFirebaseData(fbData) {
             var node = document.createTextNode(capitaliseFirstLetter(key));
             h3.appendChild(node);
 
-            document.getElementById("accordion").appendChild(createBootstrapCard(key + 'Heading', key));
+            document.getElementById("accordion").appendChild(createBootstrapCard(key + 'Heading', json[key]["name"]));
         }
     }
     for (var key in json) {
