@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace L2LAdminPage.Controllers
@@ -16,13 +18,21 @@ namespace L2LAdminPage.Controllers
             return "This is my default action.";
         }
 
+        HttpClient client = new HttpClient();
+
         // Get: /Firebase/GetJson
         // Get: /Firebase/GetJson?url=https://www.placeholder.com
         public string GetJson(string url)
         {
             try
             {
-                return Get(url);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+
+                using HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                using Stream stream = response.GetResponseStream();
+                using StreamReader reader = new StreamReader(stream);
+                return reader.ReadToEnd();
             } 
             catch (Exception e)
             {
@@ -31,17 +41,30 @@ namespace L2LAdminPage.Controllers
             
         }
 
-        private string Get(string uri)
+        // FirebasePatch: /Firebase/FirebasePatch?url="placeholder"&category="placeholder"&subCategory="placeholder"&key="placeholder"&value="placeholder"
+        public async Task<HttpResponseMessage> FirebasePatchAsync(string url, string category, string subCategory, string key, string value)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            string requestUri = $"{url}/{category}/{subCategory}.json";
+            string body = "{\"" + key + "\"" + ":" + "\"" + value + "\"}";
+            var content = new StringContent(body, Encoding.UTF8, "application/json");
 
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUri)
             {
-                return reader.ReadToEnd();
-            }
+                Content = content
+            };
+
+            var response = await client.SendAsync(request);
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> FirebaseDeleteAsync(string url, string category, string subCategory, string key)
+        {
+            string requestUri = $"{url}/{category}/{subCategory}/{key}.json";
+
+            var request = new HttpRequestMessage(new HttpMethod("DELETE"), requestUri);
+
+            var response = await client.SendAsync(request);
+            return response;
         }
     }
 }
