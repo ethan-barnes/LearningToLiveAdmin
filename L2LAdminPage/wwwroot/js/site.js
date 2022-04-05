@@ -93,7 +93,7 @@ function displayFirebaseData(fbData) {
                 appendToDiv(h5);
 
                 name = name.replace(/\s+/g, ''); // remove whitespace
-                createForm(key + 'Heading', id, h5);
+                createForm(key, id, h5);
 
                 // Create list entry that will hold our link                    
                 for (var linkId in json[key][id]) {
@@ -122,8 +122,9 @@ function appendToDiv(element) {
     collapsableListDivs[divNum].appendChild(element);
 }
 
-function updateFirebase(categoryId, subCatId, titleId, urlId) {
-    var category = document.getElementById(categoryId).innerText;
+function updateFirebase(category, subCatId, titleId, urlId) {
+    //var categoryId = category + 'Heading';
+    //var category = document.getElementById(categoryId).innerText;
     //var subCat = document.getElementById(subCatId).innerText;
     var title = document.getElementById(titleId).value;
     var url = document.getElementById(urlId).value;
