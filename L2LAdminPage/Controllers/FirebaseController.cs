@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,34 +34,41 @@ namespace L2LAdminPage.Controllers
                 using Stream stream = response.GetResponseStream();
                 using StreamReader reader = new StreamReader(stream);
                 return reader.ReadToEnd();
-            } 
+            }
             catch (Exception e)
             {
                 return $"Error occured: {e}";
             }
-            
+
         }
 
         // FirebasePatch: /Firebase/FirebasePatch?url="placeholder"&category="placeholder"&subCategory="placeholder"&key="placeholder"&value="placeholder"
         public async Task<HttpResponseMessage> FirebasePatchAsync(string url, string category, string subCategory, string key, string value)
         {
-            string requestUri = $"{url}/{category}/{subCategory}.json";
+            var token = HttpContext.Session.GetString("_UserToken");
+
+            string requestUri = $"{url}/{category}/{subCategory}.json?auth={token}";
             string body = "{\"" + key + "\"" + ":" + "\"" + value + "\"}";
             var content = new StringContent(body, Encoding.UTF8, "application/json");
 
             var request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUri)
             {
-                Content = content
+                Content = content,
+
             };
 
             var response = await client.SendAsync(request);
             return response;
+
+
+
         }
 
         public async Task<HttpResponseMessage> FirebaseDeleteAsync(string url, string category, string subCategory, string key)
         {
-            string requestUri = $"{url}/{category}/{subCategory}/{key}.json";
+            var token = HttpContext.Session.GetString("_UserToken");
 
+            string requestUri = $"{url}/{category}/{subCategory}/{key}.json?auth={token}";
             var request = new HttpRequestMessage(new HttpMethod("DELETE"), requestUri);
 
             var response = await client.SendAsync(request);

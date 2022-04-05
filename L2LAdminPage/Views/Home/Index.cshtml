@@ -1,38 +1,20 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Firebase";
 }
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+    <h1 class="display-4">Welcome to firebase</h1>
+    <br/>
 
-    <!-- Log in form -->
-    <section class="vh-100">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-sm-6 text-black">
-                    <div class="d-flex align-items-center h-custom-2 px-5 ms-xl-4 mt-5 pt-5 pt-xl-0 mt-xl-n5">
-                        <form id="login" style="width: 23rem;" action="../Home/Firebase" method="post">
-                            <h3 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Log in</h3>
-                            <!-- email -->
-                            <div class="form-outline mb-4">
-                                <input type="email" id="form2Example18" class="form-control form-control-lg" />
-                                <label class="form-label" for="form2Example18">Email address</label>
-                            </div>
-                            <!-- password -->
-                            <div class="form-outline mb-4">
-                                <input type="password" id="form2Example28" class="form-control form-control-lg" />
-                                <label class="form-label" for="form2Example28">Password</label>
-                            </div>
-                            <!-- log in button -->
-                            <div class="pt-1 mb-4">
-                                <button class="btn btn-info btn-lg btn-block" >Login</button>
-                            </div>
-                            <!-- forgot password -->
-                            <p class="small mb-5 pb-lg-2"><a class="text-muted" href="../Home/Privacy">Forgot password?</a></p>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div id="countryButtons">
+        <button id="uk_button" type="button" class="btn btn-info btn-lg" onclick="FirebaseGet('united_kingdom');">United Kingdom</button>
+        <button id="spain_button" type="button" class="btn btn-info btn-lg" onclick="FirebaseGet('spain');">Spain</button>
+        <button id="ireland_button" type="button" class="btn btn-info btn-lg" onclick="FirebaseGet('ireland');">Ireland</button>
+        <button id="slovenia_button" type="button" class="btn btn-info btn-lg" onclick="FirebaseGet('slovenia');">Slovenia</button>
+        <button id="finland_button" type="button" class="btn btn-info btn-lg" onclick="FirebaseGet('finland');">Finland</button>
+    </div>    
+
+    <br/>
+
+    <div id="accordion"></div>
 </div>
