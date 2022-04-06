@@ -14,12 +14,23 @@ namespace L2LAdminPage.Controllers
 {
     public class HomeController : Controller
     {
-        private string token;
         FirebaseAuthProvider auth;
 
         public HomeController()
         {
             auth = new FirebaseAuthProvider(new FirebaseConfig("AIzaSyA3wxtZ0r-RzoQh27Zf0qEP0Jg8X9UnoUc"));
+        }
+
+        public IActionResult IsSignedIn()
+        {
+            if (HttpContext.Session.Get("_UserToken") != null)
+            {
+                return View("IsSignedInTrue");
+            } 
+            else
+            {
+                return View("IsSignedInFalse");
+            }
         }
 
         public IActionResult Register()
@@ -58,7 +69,7 @@ namespace L2LAdminPage.Controllers
             try
             {
                 var fbAuthLink = await auth.SignInWithEmailAndPasswordAsync(userModel.Email, userModel.Password);
-                token = fbAuthLink.FirebaseToken;
+                string token = fbAuthLink.FirebaseToken;
                 //saving the token in a session variable
                 if (token != null)
                 {
