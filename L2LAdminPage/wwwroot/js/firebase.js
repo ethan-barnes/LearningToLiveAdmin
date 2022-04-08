@@ -3,6 +3,7 @@ var divNum = 0;
 var siteUrl = window.location.host;
 var dbUrl;
 var currentCountry;
+var signedIn;
 
 function FirebaseDelete(category, subCategory, key) {
     if (confirm("Are you sure you want to delete " + key + "?")) {
@@ -45,7 +46,8 @@ function FirebasePatch(category, subCategory, key, value) {
     });
 }
 
-function FirebaseGet(country) {
+function FirebaseGet(country, isSignedIn) {
+    signedIn = isSignedIn;
     currentCountry = country;
     dbUrl = 'https://learningtolive-e4844-default-rtdb.europe-west1.firebasedatabase.app/' + country;
     $.ajax({
@@ -93,7 +95,7 @@ function displayFirebaseData(fbData) {
                 appendToDiv(h5);
 
                 name = name.replace(/\s+/g, ''); // remove whitespace
-                createForm(key, id, h5);
+                if (signedIn) createForm(key, id, h5);
 
                 // Create list entry that will hold our link                    
                 for (var linkId in json[key][id]) {
@@ -108,7 +110,7 @@ function displayFirebaseData(fbData) {
                     listElement.setAttribute('style', 'list-style: none;');
                     link.appendChild(node2);
                     listElement.appendChild(link);
-                    listElement.appendChild(createDeleteButton(key, id, linkId.toString()));
+                    if (signedIn) listElement.appendChild(createDeleteButton(key, id, linkId.toString()));
 
                     appendToDiv(listElement);
                 }
@@ -123,9 +125,6 @@ function appendToDiv(element) {
 }
 
 function updateFirebase(category, subCatId, titleId, urlId) {
-    //var categoryId = category + 'Heading';
-    //var category = document.getElementById(categoryId).innerText;
-    //var subCat = document.getElementById(subCatId).innerText;
     var title = document.getElementById(titleId).value;
     var url = document.getElementById(urlId).value;
     FirebasePatch(category, subCatId, title, url);
