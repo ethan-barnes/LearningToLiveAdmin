@@ -94,7 +94,7 @@ function displayFirebaseData(fbData) {
                 h5.appendChild(node1);
                 appendToDiv(h5);
 
-                name = name.replace(/\s+/g, ''); // remove whitespace
+                //name = name.replace(/\s+/g, ''); // remove whitespace
                 if (signedIn) createForm(key, id, h5);
 
                 // Create list entry that will hold our link                    
@@ -194,6 +194,7 @@ function createForm(title, content, heading) {
 
 // Using Bootstrap collapse functionality
 function createBootstrapCard(title, contentId) {
+    var contentIdNoWhitespace = contentId.replace(/\s+/g, ''); // remove whitespace
     var card = document.createElement('div');
     card.setAttribute('class', 'card');
 
@@ -207,16 +208,16 @@ function createBootstrapCard(title, contentId) {
     var btn = document.createElement('button');
     btn.setAttribute('class', 'btn btn-lg btn-block');
     btn.setAttribute('data-toggle', 'collapse');
-    btn.setAttribute('data-target', '#' + contentId);
+    btn.setAttribute('data-target', '#' + contentIdNoWhitespace);
     btn.setAttribute('aria-expanded', 'false');
-    btn.setAttribute('aria-controls', contentId);
+    btn.setAttribute('aria-controls', contentIdNoWhitespace);
     btn.innerHTML = contentId;
 
     h5.appendChild(btn);
     cardHeader.appendChild(h5);
 
     var collapsable = document.createElement('div');
-    collapsable.setAttribute('id', contentId);
+    collapsable.setAttribute('id', contentIdNoWhitespace);
     collapsable.setAttribute('class', 'collapse show');
     collapsable.setAttribute('aria-labelledby', title);
 
