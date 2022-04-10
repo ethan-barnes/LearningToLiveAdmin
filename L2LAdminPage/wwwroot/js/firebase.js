@@ -194,7 +194,7 @@ function createForm(title, content, heading) {
 
 // Using Bootstrap collapse functionality
 function createBootstrapCard(title, contentId) {
-    var contentIdNoWhitespace = contentId.replace(/\s+/g, ''); // remove whitespace
+    var contentIdNoWhitespace = contentId.replace(/\s+/g, ''); // remove whitespace to make cards collapse
     var card = document.createElement('div');
     card.setAttribute('class', 'card');
 
