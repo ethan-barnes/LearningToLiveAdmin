@@ -44,7 +44,7 @@ namespace L2LAdminPage.Controllers
 
         // FirebasePatch: /Firebase/FirebasePatch?url="placeholder"&category="placeholder"&subCategory="placeholder"&key="placeholder"&value="placeholder"
         public async Task<HttpResponseMessage> FirebasePatchAsync(string url, string category, string subCategory, string key, string value)
-        {
+        {   
             var token = HttpContext.Session.GetString("_UserToken");
 
             string requestUri = $"{url}/{category}/{subCategory}.json?auth={token}";
@@ -52,16 +52,13 @@ namespace L2LAdminPage.Controllers
             var content = new StringContent(body, Encoding.UTF8, "application/json");
 
             var request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUri)
-            {
+            { 
                 Content = content,
 
             };
 
             var response = await client.SendAsync(request);
-            return response;
-
-
-
+            return response;           
         }
 
         public async Task<HttpResponseMessage> FirebaseDeleteAsync(string url, string category, string subCategory, string key)
