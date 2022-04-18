@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewData["Title"] = "Learning to Live";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<div class="text-center">
+    <h1 class="display-4">Welcome to firebase</h1>
+    <br />
+
+    <div id="countryButtons">
+        <button id="uk_button" type="button" class="btn btn-info btn-lg" onclick="FirebaseGet('united_kingdom', true);">United Kingdom</button>
+        <button id="spain_button" type="button" class="btn btn-info btn-lg" onclick="FirebaseGet('spain', true);">Spain</button>
+        <button id="ireland_button" type="button" class="btn btn-info btn-lg" onclick="FirebaseGet('ireland', true);">Ireland</button>
+        <button id="slovenia_button" type="button" class="btn btn-info btn-lg" onclick="FirebaseGet('slovenia', true);">Slovenia</button>
+        <button id="finland_button" type="button" class="btn btn-info btn-lg" onclick="FirebaseGet('finland', true);">Finland</button>
+    </div>
+
+    <br />
+
+    <div id="accordion"></div>
+</div>
+

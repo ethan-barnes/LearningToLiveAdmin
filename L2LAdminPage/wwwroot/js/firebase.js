@@ -3,6 +3,7 @@ var divNum = 0;
 var siteUrl = window.location.host;
 var dbUrl;
 var currentCountry;
+var signedIn;
 
 function FirebaseDelete(category, subCategory, key) {
     if (confirm("Are you sure you want to delete " + key + "?")) {
@@ -14,12 +15,12 @@ function FirebaseDelete(category, subCategory, key) {
             success: function (data) {
                 console.log("success: ");
                 console.log(data);
-                FirebaseGet(currentCountry); // updates lists
+                FirebaseGet(currentCountry, signedIn); // updates lists
             },
             error: function (xhr) {
                 alert("Error writing to firebase");
                 console.log(xhr);
-                FirebaseGet(currentCountry); // updates lists
+                FirebaseGet(currentCountry, signedIn); // updates lists
             }
         });
     }
@@ -35,17 +36,18 @@ function FirebasePatch(category, subCategory, key, value) {
         success: function (data) {
             console.log("success: ");
             console.log(data);
-            FirebaseGet(currentCountry); // updates lists
+            FirebaseGet(currentCountry, signedIn); // updates lists
         },
         error: function (xhr) {
             alert("Error writing to firebase");
             console.log(xhr);
-            FirebaseGet(currentCountry); // updates lists
+            FirebaseGet(currentCountry, signedIn); // updates lists
         }
     });
 }
 
-function FirebaseGet(country) {
+function FirebaseGet(country, isSignedIn) {
+    signedIn = isSignedIn;
     currentCountry = country;
     dbUrl = 'https://learningtolive-e4844-default-rtdb.europe-west1.firebasedatabase.app/' + country;
     $.ajax({
@@ -64,56 +66,68 @@ function FirebaseGet(country) {
 function displayFirebaseData(fbData) {
     // Prevents multiple button presses showing multiple data.
     document.getElementById("accordion").innerHTML = "";
+    divNum = 0;
+    collapsableListDivs = [];
 
     var json = JSON.parse(fbData);
     console.log(json);
 
     for (var key in json) {
         if (json.hasOwnProperty(key)) {
-            // Create heading for each key in database
-            var h3 = document.createElement("h3");
-            var node = document.createTextNode(capitaliseFirstLetter(key));
-            h3.appendChild(node);
+            if (json[key].hasOwnProperty('headings')) {
+                // Create heading for each key in database
+                var h3 = document.createElement("h3");
+                var node = document.createTextNode(capitaliseFirstLetter(key));
+                h3.appendChild(node);
 
-            document.getElementById("accordion").appendChild(createBootstrapCard(key + 'Heading', json[key]["name"]));
+                document.getElementById("accordion").appendChild(createBootstrapCard(key + 'Heading', json[key]["name"]));
+                if (!signedIn) {
+                    $('.collapse').collapse();
+                }
+            }
         }
     }
     for (var key in json) {
         if (json.hasOwnProperty(key)) {
-            for (var child2 in json[key]['headings']) {
-                // Create heading for children of key
-                var name = json[key]['headings'][child2]['name'];
-                var id = json[key]['headings'][child2]['id'];
+            if (json[key].hasOwnProperty('headings')) {
+                for (var child2 in json[key]['headings']) {
+                    // Create heading for children of key
+                    var name = json[key]['headings'][child2]['name'];
+                    var id = json[key]['headings'][child2]['id'];
 
-                var h5 = document.createElement("h5");
-                h5.setAttribute('id', name + 'SubCat');
-                var node1 = document.createTextNode(name);
+                    var h5 = document.createElement("h5");
+                    h5.setAttribute('id', name + 'SubCat');
+                    var node1 = document.createTextNode(name);
 
-                h5.appendChild(node1);
-                appendToDiv(h5);
+                    // Only display empty headings to signed in user
+                    if (json[key][id] != undefined || signedIn) {
+                        h5.appendChild(node1);
+                        appendToDiv(h5);
+                    }
 
-                name = name.replace(/\s+/g, ''); // remove whitespace
-                createForm(key, id, h5);
+                    //name = name.replace(/\s+/g, ''); // remove whitespace
+                    if (signedIn) createForm(key, id, h5);
 
-                // Create list entry that will hold our link                    
-                for (var linkId in json[key][id]) {
-                    var listElement = document.createElement("li");
+                    // Create list entry that will hold our link                    
+                    for (var linkId in json[key][id]) {
+                        var listElement = document.createElement("li");
 
-                    var link = document.createElement("a");
-                    var node2 = document.createTextNode(linkId.toString());
+                        var link = document.createElement("a");
+                        var node2 = document.createTextNode(linkId.toString());
 
-                    link.setAttribute('href', json[key][id][linkId]); // Add link to relevant resource
-                    link.setAttribute('target', '_blank');
-                    link.setAttribute('style', 'padding-right: 1%;');
-                    listElement.setAttribute('style', 'list-style: none;');
-                    link.appendChild(node2);
-                    listElement.appendChild(link);
-                    listElement.appendChild(createDeleteButton(key, id, linkId.toString()));
+                        link.setAttribute('href', json[key][id][linkId]); // Add link to relevant resource
+                        link.setAttribute('target', '_blank');
+                        link.setAttribute('style', 'padding-right: 1%;');
+                        listElement.setAttribute('style', 'list-style: none;');
+                        link.appendChild(node2);
+                        listElement.appendChild(link);
+                        if (signedIn) listElement.appendChild(createDeleteButton(key, id, linkId.toString()));
 
-                    appendToDiv(listElement);
+                        appendToDiv(listElement);
+                    }
                 }
+                divNum++;
             }
-            divNum++;
         }
     }
 }
@@ -123,9 +137,6 @@ function appendToDiv(element) {
 }
 
 function updateFirebase(category, subCatId, titleId, urlId) {
-    //var categoryId = category + 'Heading';
-    //var category = document.getElementById(categoryId).innerText;
-    //var subCat = document.getElementById(subCatId).innerText;
     var title = document.getElementById(titleId).value;
     var url = document.getElementById(urlId).value;
     FirebasePatch(category, subCatId, title, url);
@@ -195,6 +206,7 @@ function createForm(title, content, heading) {
 
 // Using Bootstrap collapse functionality
 function createBootstrapCard(title, contentId) {
+    var contentIdNoWhitespace = contentId.replace(/\s+/g, ''); // remove whitespace to make cards collapse
     var card = document.createElement('div');
     card.setAttribute('class', 'card');
 
@@ -208,16 +220,16 @@ function createBootstrapCard(title, contentId) {
     var btn = document.createElement('button');
     btn.setAttribute('class', 'btn btn-lg btn-block');
     btn.setAttribute('data-toggle', 'collapse');
-    btn.setAttribute('data-target', '#' + contentId);
+    btn.setAttribute('data-target', '#' + contentIdNoWhitespace);
     btn.setAttribute('aria-expanded', 'false');
-    btn.setAttribute('aria-controls', contentId);
+    btn.setAttribute('aria-controls', contentIdNoWhitespace);
     btn.innerHTML = contentId;
 
     h5.appendChild(btn);
     cardHeader.appendChild(h5);
 
     var collapsable = document.createElement('div');
-    collapsable.setAttribute('id', contentId);
+    collapsable.setAttribute('id', contentIdNoWhitespace);
     collapsable.setAttribute('class', 'collapse show');
     collapsable.setAttribute('aria-labelledby', title);
 

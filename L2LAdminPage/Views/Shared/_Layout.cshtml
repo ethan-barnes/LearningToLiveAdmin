@@ -6,6 +6,8 @@
     <title>@ViewData["Title"] - L2LAdminPage</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="import" href="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js" />
+    <link rel="import" href="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js" />
 </head>
 <body>
     <header>
@@ -19,13 +21,20 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="SignIn">Sign In</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="LogOut">Log Out</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Firebase">Firebase</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Register">Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" 
+                               target="_blank" 
+                               href="https://forms.office.com/Pages/ResponsePage.aspx?id=0aJeJGVDJkeAWmMeuT2Tqu8X0dAa6ktFvDvIrgRWdjFUREoxNlNaQ0JCT0dJQVg1MVcxWVJMT1Q1My4u">
+                                Rate this app
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -40,13 +49,12 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2022 - L2LAdminPage - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-            &copy; 2022 - L2LAdminPage - <a asp-area="" asp-controller="Home" asp-action="Firebase">Firebase</a>
+            &copy; 2022 - L2LAdminPage
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/firebase.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

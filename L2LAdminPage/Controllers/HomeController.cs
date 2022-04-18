@@ -6,16 +6,92 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Firebase.Auth;
+using Microsoft.AspNetCore.Http;
 
+// https://arno-waegemans.medium.com/firebase-authentication-for-asp-net-core-mvc-defd6135c632
 namespace L2LAdminPage.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        FirebaseAuthProvider auth;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController()
         {
-            _logger = logger;
+            auth = new FirebaseAuthProvider(new FirebaseConfig("AIzaSyA3wxtZ0r-RzoQh27Zf0qEP0Jg8X9UnoUc"));
+        }
+
+        public IActionResult IsSignedIn()
+        {
+            if (HttpContext.Session.Get("_UserToken") != null)
+            {
+                return View("IsSignedInTrue");
+            } 
+            else
+            {
+                return View("IsSignedInFalse");
+            }
+        }
+
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(UserModel userModel)
+        {
+            //create the user
+            await auth.CreateUserWithEmailAndPasswordAsync(userModel.Email, userModel.Password);
+            //log in the new user
+            var fbAuthLink = await auth.SignInWithEmailAndPasswordAsync(userModel.Email, userModel.Password);
+            string token = fbAuthLink.FirebaseToken;
+            //saving the token in a session variable
+            if (token != null)
+            {
+                HttpContext.Session.SetString("_UserToken", token);
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View();
+            }
+        }
+
+        public IActionResult SignIn()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> SignIn(UserModel userModel)
+        {
+            //log in the user
+            try
+            {
+                var fbAuthLink = await auth.SignInWithEmailAndPasswordAsync(userModel.Email, userModel.Password);
+                string token = fbAuthLink.FirebaseToken;
+                //saving the token in a session variable
+                if (token != null)
+                {
+                    HttpContext.Session.SetString("_UserToken", token);
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return View();
+                }
+            } 
+            catch (Exception)
+            {
+                return RedirectToAction("SignIn");
+            }
+            
+        }
+
+        public IActionResult LogOut()
+        {
+            HttpContext.Session.Remove("_UserToken");
+            return RedirectToAction("Index");
         }
 
         public IActionResult Index()
@@ -23,14 +99,17 @@ namespace L2LAdminPage.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
         public IActionResult Firebase()
         {
-            return View();
+            var token = HttpContext.Session.GetString("_UserToken");
+            if (token != null)
+            {
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("SignIn");
+            }
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
