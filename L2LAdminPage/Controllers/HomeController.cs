@@ -33,31 +33,6 @@ namespace L2LAdminPage.Controllers
             }
         }
 
-        public IActionResult Register()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Register(UserModel userModel)
-        {
-            //create the user
-            await auth.CreateUserWithEmailAndPasswordAsync(userModel.Email, userModel.Password);
-            //log in the new user
-            var fbAuthLink = await auth.SignInWithEmailAndPasswordAsync(userModel.Email, userModel.Password);
-            string token = fbAuthLink.FirebaseToken;
-            //saving the token in a session variable
-            if (token != null)
-            {
-                HttpContext.Session.SetString("_UserToken", token);
-                return RedirectToAction("Index");
-            }
-            else
-            {
-                return View();
-            }
-        }
-
         public IActionResult SignIn()
         {
             return View();
